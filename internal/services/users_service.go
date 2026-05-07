@@ -6,6 +6,7 @@ import (
 
 	"github.com/Mateus-R-De-Lima/GoBid/internal/store/pgstore"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,7 +19,10 @@ type UsersService struct {
 }
 
 // Mensagem de erro para indicar que o nome de usuário ou email já existe
-var ErrDuplicatedEmailOrPassword = errors.New("username or email already exists")
+var (
+	ErrDuplicatedEmailOrUsername = errors.New("username or email already exists")
+	ErrInvalidCredentials        = errors.New("invalid credentials")
+)
 
 // NewUserService é uma função que cria e retorna uma nova instância de UsersService
 func NewUserService(pool *pgxpool.Pool) UsersService {
@@ -54,11 +58,26 @@ func (us *UsersService) CreateUser(ctx context.Context, name, email, password, b
 		var pgErr *pgconn.PgError
 
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return uuid.UUID{}, ErrDuplicatedEmailOrPassword
+			return uuid.UUID{}, ErrDuplicatedEmailOrUsername
 		}
 
 		return uuid.UUID{}, err
 	}
 	// Retornando o ID do usuário criado e nil para indicar que não houve erros
 	return id, nil
+}
+
+func (us *UsersService) AuthenticateUser(ctx context.Context, email, password string) (uuid.UUID, error) {
+	user, err := us.queries.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return uuid.UUID{}, ErrInvalidCredentials
+		}
+
+		return uuid.UUID{}, err
+	}
+
+	return user.ID, nil
+
 }

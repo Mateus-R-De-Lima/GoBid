@@ -2,18 +2,26 @@ package main
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Mateus-R-De-Lima/GoBid/internal/api"
 	"github.com/Mateus-R-De-Lima/GoBid/internal/services"
+	"github.com/alexedwards/scs/pgxstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	gob.Register(uuid.UUID{})
+
 	// Carregando as variáveis de ambiente do arquivo .env e tratando erros caso o arquivo não seja encontrado ou haja problemas na leitura
 	if err := godotenv.Load(); err != nil {
 		panic(err)
@@ -42,10 +50,18 @@ func main() {
 	if err := pool.Ping(ctx); err != nil {
 		panic(err)
 	}
+
+	s := scs.New()
+	s.Store = pgxstore.New(pool)
+	s.Lifetime = 24 * time.Hour
+	s.Cookie.HttpOnly = true
+	s.Cookie.SameSite = http.SameSiteLaxMode
+
 	// Criando uma instância da API, configurando o roteador e os serviços necessários para a aplicação
 	api := api.Api{
 		Router:      chi.NewMux(),
 		UserService: services.NewUserService(pool),
+		Sessions:    s,
 	}
 	// Vinculando as rotas da API aos manipuladores de requisições correspondentes
 	api.BindRoutes()
