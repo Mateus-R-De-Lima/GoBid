@@ -7,7 +7,8 @@ import (
 )
 
 type Api struct {
-	Router      *chi.Mux
-	UserService services.UsersService
-	Sessions    *scs.SessionManager
+	Router         *chi.Mux
+	UserService    services.UsersService
+	Sessions       *scs.SessionManager
+	ProductService *services.ProductsService
 }

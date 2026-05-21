@@ -59,9 +59,10 @@ func main() {
 
 	// Criando uma instância da API, configurando o roteador e os serviços necessários para a aplicação
 	api := api.Api{
-		Router:      chi.NewMux(),
-		UserService: services.NewUserService(pool),
-		Sessions:    s,
+		Router:         chi.NewMux(),
+		UserService:    services.NewUserService(pool),
+		ProductService: services.NewProductsService(pool),
+		Sessions:       s,
 	}
 	// Vinculando as rotas da API aos manipuladores de requisições correspondentes
 	api.BindRoutes()
