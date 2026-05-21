@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateProductInput struct {
+type CreateProductRequest struct {
 	SellerId    uuid.UUID `json:"seller_id"`
 	ProductName string    `json:"product_name"`
 	Description string    `json:"description"`
@@ -18,7 +18,7 @@ type CreateProductInput struct {
 
 const minAuctionDuration = 2 * time.Hour
 
-func (req CreateProductInput) Valid(ctx context.Context) validator.Evaluator {
+func (req CreateProductRequest) Valid(ctx context.Context) validator.Evaluator {
 
 	var eval validator.Evaluator
 
