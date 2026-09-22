@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Mateus-R-De-Lima/GoBid/internal/api"
+	"github.com/Mateus-R-De-Lima/GoBid/internal/auth"
 	"github.com/Mateus-R-De-Lima/GoBid/internal/services"
 	"github.com/alexedwards/scs/pgxstore"
 	"github.com/alexedwards/scs/v2"
@@ -57,12 +58,15 @@ func main() {
 	s.Cookie.HttpOnly = true
 	s.Cookie.SameSite = http.SameSiteLaxMode
 
+	jwtService := auth.NewJwtService(os.Getenv("JWT_SECRET"))
+
 	// Criando uma instância da API, configurando o roteador e os serviços necessários para a aplicação
 	api := api.Api{
 		Router:         chi.NewMux(),
 		UserService:    services.NewUserService(pool),
 		ProductService: services.NewProductsService(pool),
 		Sessions:       s,
+		JwtService:     jwtService,
 	}
 	// Vinculando as rotas da API aos manipuladores de requisições correspondentes
 	api.BindRoutes()
