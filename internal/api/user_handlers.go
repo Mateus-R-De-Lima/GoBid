@@ -74,8 +74,19 @@ func (api *Api) handleLoginUser(w http.ResponseWriter, r *http.Request) {
 
 	api.Sessions.Put(r.Context(), "AuthenticatedUserId", id)
 
+	token, err := api.JwtService.GenerateToken(id.String())
+	if err != nil {
+		http.Error(
+			w,
+			"Erro ao gerar token",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
 	jsonutils.EncodeJson(w, r, http.StatusOK, map[string]any{
 		"message": "logged in successfully",
+		"token":   token,
 	})
 }
 
