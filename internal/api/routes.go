@@ -35,9 +35,11 @@ func (a *Api) BindRoutes() {
 				})
 			})
 
-			r.Group(func(r chi.Router) {
-				r.Use(a.AuthMiddleware)
-				r.Post("/", a.handlerCreateProduct)
+			r.Route("/products", func(r chi.Router) {
+				r.Group(func(r chi.Router) {
+					r.Use(a.AuthMiddleware)
+					r.Post("/", a.handlerCreateProduct)
+				})
 			})
 
 		})
