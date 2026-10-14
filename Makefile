@@ -2,7 +2,9 @@ APP_NAME=gobid
 REGIO=N=us-east-1
 VPC_ID=
 SG_NAME=gobid-sg
-
+AWS_ACCOUNT_ID=$(shell aws sts get-caller-identity--query Accont --output text)
+ECR_URL=$(AWS_ACCOUNT_ID).dkr.ecr.$(REGIO).amazonaws.com
+REPO_URL=$(ECR_URL)/$(APP_NAME)
 
 create-sg:
  @if ! aws ec2 describe-security-groups --filters Name=group-name,Values=$(SG_NAME)  --region $(REGIO) --query 'SecurityGroups[*].GroupId' --output text | grep -q . | grep -qE 'sg-'; then  \
@@ -23,4 +25,18 @@ create-sg:
 		--port 5432 \
 		--cidr 0.0.0.0/0 \
 		--region $(REGIO) || echo "Ingress rule already exists for port 5432 on SG $$SG_ID."; \
+
+create-ecr:
+	aws ecr describe-repositories --repository-name $(APP_NAME) --region $(REGIO) || \
+	aws ecr create-repository --repository-name $(APP_NAME) --region $(REGIO)
  
+build:
+	docker build -t $(APP_NAME) -f Dockerfile.prod .
+
+tag: build
+	docker tag $(APP_NAME):latest $(REPO_URL):latest
+
+push: tag
+	aws acr get-login-password --region $(REGIO) | \
+	docker login --username AWS --password-stdin $(ECR_URL)
+	docker push $(REPO_URL):latest
