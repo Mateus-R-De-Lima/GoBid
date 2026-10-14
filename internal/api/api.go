@@ -4,6 +4,7 @@ import (
 	"github.com/Mateus-R-De-Lima/GoBid/internal/services"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/websocket"
 )
 
 type Api struct {
@@ -11,4 +12,7 @@ type Api struct {
 	UserService    services.UsersService
 	Sessions       *scs.SessionManager
 	ProductService *services.ProductsService
+	WsUpgrader     websocket.Upgrader
+	ActionLobby    services.AuctionLobby
+	BidsService    services.BidsService
 }

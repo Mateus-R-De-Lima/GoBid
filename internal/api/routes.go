@@ -35,13 +35,13 @@ func (a *Api) BindRoutes() {
 				})
 			})
 
-			r.Route("/products", func(r chi.Router) {
-				r.Group(func(r chi.Router) {
-					r.Use(a.AuthMiddleware)
+			r.Group(func(r chi.Router) {
+				r.Use(a.AuthMiddleware)
+				r.Route("/products", func(r chi.Router) {
 					r.Post("/", a.handlerCreateProduct)
+					r.Get("/{product_id}/ws", a.handleSubscribeUserToAuction)
 				})
 			})
-
 		})
 	})
 
