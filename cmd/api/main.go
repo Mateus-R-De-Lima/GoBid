@@ -77,9 +77,15 @@ func main() {
 	// Vinculando as rotas da API aos manipuladores de requisições correspondentes
 	api.BindRoutes()
 
-	fmt.Println("Server is running on port 8080")
+	port := os.Getenv("GOBID_APP_PORT")
 
-	if err := http.ListenAndServe(":8080", api.Router); err != nil {
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Println(fmt.Sprintf("Server is running on port %s...", port))
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), api.Router); err != nil {
 		panic(err)
 	}
 }
