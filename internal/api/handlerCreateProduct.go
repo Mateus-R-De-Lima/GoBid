@@ -48,7 +48,10 @@ func (a *Api) handlerCreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, _ := context.WithDeadline(context.Background(), data.AuctionEnd)
+	ctx, cancel := context.WithDeadline(context.Background(), data.AuctionEnd)
+
+	defer cancel()
+
 	auctionRoom := services.NewAuctionRoom(ctx, productId, a.BidsService)
 
 	go auctionRoom.Run()                         // Iniciando a sala de leilão em uma goroutine separada para processar eventos de forma assíncrona e permitir que a API continue respondendo a outras requisições enquanto o leilão está ativo
