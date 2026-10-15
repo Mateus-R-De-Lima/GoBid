@@ -57,14 +57,14 @@ jobs:
         run: |
           go test -coverprofile=coverage.out ./...
           go tool cover -func=coverage.out
-          go tool cover -func=coverage.out | grep total | awk '{ print $3 }' > coverage.txt
+          go tool cover -func=coverage.out | grep total | awk '{ print $$3 }' > coverage.txt
 
       - name: Validar cobertude mínima
         run: |
           COV=$(cat coverage.txt | sed 's/%//')
           MIN=0
-          echo "Cobertura atual: $COV%"
-          if [ "$COV" -lt "$MIN" ]; then
-            echo "Cobertura abaixo do mínimo ($MIN%)"
+          echo "Cobertura atual: $$COV%"
+          if [ "$$COV" -lt "$$MIN" ]; then
+            echo "Cobertura abaixo do mínimo ($$MIN%)"
             exit 1
           fi
