@@ -23,6 +23,11 @@ func (a *Api) BindRoutes() {
 	a.Router.Use(a.PlaintextHTTP)
 	a.Router.Use(csrfMiddleware) */
 
+	a.Router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
 	a.Router.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			//r.Get("/csrftoken", a.HandleGetCSRFToken)
