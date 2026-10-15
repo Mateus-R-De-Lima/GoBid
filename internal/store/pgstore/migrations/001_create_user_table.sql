@@ -1,5 +1,5 @@
 -- Write your migrate up statements here
-
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS users(
     id UUID PRIMARY KEY  NOT NULL DEFAULT gen_random_uuid(),
     user_name VARCHAR(50) UNIQUE NOT NULL,

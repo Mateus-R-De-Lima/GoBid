@@ -23,11 +23,7 @@ func main() {
 
 	gob.Register(uuid.UUID{})
 
-	// Carregando as variáveis de ambiente do arquivo .env e tratando erros caso o arquivo não seja encontrado ou haja problemas na leitura
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
-
+	godotenv.Load()
 	// Criando um contexto para a aplicação, que pode ser usado para controlar o tempo de vida de operações assíncronas e cancelamento
 	ctx := context.Background()
 

@@ -10,9 +10,7 @@ import (
 func main() {
 
 	// 1 - Carregar as variáveis de ambiente do arquivo .env
-	if err := godotenv.Load(); err != nil {
-		panic("Erro ao carregar o arquivo .env")
-	}
+	godotenv.Load()
 
 	// 2 - Criar o comando para executar a migração usando o tern
 	comando := exec.Command(
